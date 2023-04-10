@@ -69,8 +69,6 @@ const (
 	// encoding stores a custom version of the base32 encoding with lower case
 	// letters.
 	encoding = "0123456789abcdefghijklmnopqrstuv"
-
-	baseTimestamp = uint32(946684800) // 2000-01-01 00:00:00
 )
 
 var (
@@ -87,6 +85,8 @@ var (
 	pid = os.Getpid()
 
 	nilID ID
+
+	baseTimestamp = uint32(946684800) // 2000-01-01 00:00:00
 
 	// dec is the decoding map for base32 encoding
 	dec [256]byte
