@@ -69,6 +69,8 @@ const (
 	// encoding stores a custom version of the base32 encoding with lower case
 	// letters.
 	encoding = "0123456789abcdefghijklmnopqrstuv"
+
+	baseTimestamp = uint32(946684800) // 2000-01-01 00:00:00
 )
 
 var (
@@ -138,6 +140,16 @@ func randInt() uint32 {
 	return uint32(b[0])<<16 | uint32(b[1])<<8 | uint32(b[2])
 }
 
+// set base time to make xid can support time after 2038
+func SetBaseTime(t time.Time) {
+	baseTimestamp = uint32(t.Unix())
+}
+
+// for k8s pid most equal 1, so we use region id replace pid
+func SetRegionId(regionId string) {
+	pid = int(crc32.ChecksumIEEE([]byte(regionId)))
+}
+
 // New generates a globally unique ID
 func New() ID {
 	return NewWithTime(time.Now())
@@ -147,7 +159,7 @@ func New() ID {
 func NewWithTime(t time.Time) ID {
 	var id ID
 	// Timestamp, 4 bytes, big endian
-	binary.BigEndian.PutUint32(id[:], uint32(t.Unix()))
+	binary.BigEndian.PutUint32(id[:], uint32(t.Unix()-baseTimestamp))
 	// Machine, first 3 bytes of md5(hostname)
 	id[4] = machineID[0]
 	id[5] = machineID[1]
