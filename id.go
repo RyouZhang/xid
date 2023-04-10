@@ -86,7 +86,7 @@ var (
 
 	nilID ID
 
-	baseTimestamp = int64(946684800) // 2000-01-01 00:00:00
+	baseTimestamp = int64(0)
 
 	// dec is the decoding map for base32 encoding
 	dec [256]byte
@@ -299,7 +299,7 @@ func decode(id *ID, src []byte) bool {
 // It's a runtime error to call this method with an invalid id.
 func (id ID) Time() time.Time {
 	// First 4 bytes of ObjectId is 32-bit big-endian seconds from epoch.
-	secs := int64(binary.BigEndian.Uint32(id[0:4]))
+	secs := int64(binary.BigEndian.Uint32(id[0:4])) + baseTimestamp
 	return time.Unix(secs, 0)
 }
 
