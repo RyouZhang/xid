@@ -86,7 +86,7 @@ var (
 
 	nilID ID
 
-	baseTimestamp = uint32(946684800) // 2000-01-01 00:00:00
+	baseTimestamp = int64(946684800) // 2000-01-01 00:00:00
 
 	// dec is the decoding map for base32 encoding
 	dec [256]byte
@@ -142,7 +142,7 @@ func randInt() uint32 {
 
 // set base time to make xid can support time after 2038
 func SetBaseTime(t time.Time) {
-	baseTimestamp = uint32(t.Unix())
+	baseTimestamp = t.Unix()
 }
 
 // for k8s pid most equal 1, so we use region id replace pid
