@@ -150,6 +150,11 @@ func SetRegionId(regionId string) {
 	pid = int(crc32.ChecksumIEEE([]byte(regionId)))
 }
 
+// for k8s pid most equal 1, so we use pod id replace pid
+func SetPodId(podId string) {
+	pid = int(crc32.ChecksumIEEE([]byte(regionId)))
+}
+
 // New generates a globally unique ID
 func New() ID {
 	return NewWithTime(time.Now())
