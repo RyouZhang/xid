@@ -145,11 +145,6 @@ func SetBaseTime(t time.Time) {
 	baseTimestamp = t.Unix()
 }
 
-// for k8s pid most equal 1, so we use region id replace pid
-func SetRegionId(regionId string) {
-	pid = int(crc32.ChecksumIEEE([]byte(regionId)))
-}
-
 // for k8s pid most equal 1, so we use pod id replace pid
 func SetPodId(podId string) {
 	pid = int(crc32.ChecksumIEEE([]byte(podId)))
