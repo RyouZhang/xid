@@ -145,9 +145,9 @@ func SetBaseTime(t time.Time) {
 	baseTimestamp = t.Unix()
 }
 
-// for k8s pid most equal 1, so we use pod id replace pid
-func SetPodId(podId string) {
-	pid = int(crc32.ChecksumIEEE([]byte(podId)))
+// for k8s cluster most equal 1, so we use pod id replace pid
+func SetCluster(cluster string) {
+	pid = int(crc32.ChecksumIEEE([]byte(cluster)))
 }
 
 // New generates a globally unique ID
