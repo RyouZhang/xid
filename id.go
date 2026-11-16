@@ -43,8 +43,8 @@ package xid
 
 import (
 	"bytes"
+	"crypto/md5"
 	"crypto/rand"
-	"crypto/sha256"
 	"database/sql/driver"
 	"encoding/binary"
 	"fmt"
@@ -88,6 +88,8 @@ var (
 
 	nilID ID
 
+	baseTimestamp = int64(0)
+
 	// dec is the decoding map for base32 encoding
 	dec [256]byte
 )
@@ -124,7 +126,7 @@ func readMachineID() []byte {
 		hid, err = os.Hostname()
 	}
 	if err == nil && len(hid) != 0 {
-		hw := sha256.New()
+		hw := md5.New()
 		hw.Write([]byte(hid))
 		copy(id, hw.Sum(nil))
 	} else {
@@ -173,6 +175,14 @@ func randInt() uint32 {
 	return uint32(b[0])<<16 | uint32(b[1])<<8 | uint32(b[2])
 }
 
+func SetBaseTime(t time.Time) {
+	baseTimestamp = t.Unix()
+}
+
+func SetRegionId(regionId string) {
+	pid = int(crc32.ChecksumIEEE([]byte(regionId)))
+}
+
 // New generates a globally unique ID
 func New() ID {
 	return NewWithTime(time.Now())
@@ -182,7 +192,7 @@ func New() ID {
 func NewWithTime(t time.Time) ID {
 	var id ID
 	// Timestamp, 4 bytes, big endian
-	binary.BigEndian.PutUint32(id[:], uint32(t.Unix()))
+	binary.BigEndian.PutUint32(id[:], uint32(t.Unix()-baseTimestamp))
 	// Machine ID, 3 bytes
 	mid := getMachineID()
 	id[4] = mid[0]
@@ -323,7 +333,7 @@ func decode(id *ID, src []byte) bool {
 // It's a runtime error to call this method with an invalid id.
 func (id ID) Time() time.Time {
 	// First 4 bytes of ObjectId is 32-bit big-endian seconds from epoch.
-	secs := int64(binary.BigEndian.Uint32(id[0:4]))
+	secs := int64(binary.BigEndian.Uint32(id[0:4])) + baseTimestamp
 	return time.Unix(secs, 0)
 }
 
